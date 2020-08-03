@@ -1,4 +1,16 @@
 #:import utils kivy.utils
+<PlateClr@Label>:
+    color:0,0,0,1
+    bold:True
+    font_size:self.height/3
+    warna:[0,0,0]
+    alpa:[.1]
+    canvas.before:
+        Color:
+            rgba:root.warna+root.alpa
+        Rectangle:
+            size:self.size
+            pos:self.pos
 <Progress@BoxVer>:
     name:"RT"
     max:100
@@ -47,71 +59,96 @@
         font_size:self.height/1.5
         bold:True
 <Home>:
+    size_hint:.975,1
+    pos_hint:{"right":.99,"center_y":.5}
     num_prot:0
     num_plate:0
     btn_plate_release:0
     btn_protokol_release:0
     BoxVer:
         ScreenTittle
-            size_hint:.95,.06
-            pos_hint:{'center_x':.5,"center_y":.5}
             text:"RUN DETAIL"
-        FloatLayout
-            size_hint:.95,1
-            pos_hint:{'center_x':.5,"center_y":.5}
-            BoxLayout:
-                spacing:sp(5)
-                pos_hint:{'center_x':.5,"center_y":.5}
-                FloatLayout
-                    pos_hint:{'center_x':.5,"center_y":.5}
-                    canvas:
-                        Color:
-                            rgba:0,0,0,.5
-                        Line:
-                            width:dp(1.1)
-                            rectangle:(self.x,self.y,self.width,self.height)
-                    BoxLayout  
-                        size_hint:.98,.98
-                        spacing:dp(1)
-                        padding:0,dp(30),0,0
-                        pos_hint:{'center_x':.5,"center_y":.5}
-                        canvas:
-                            Color:
-                                rgba:0,1,1,.5
-                            Line:
-                                width:dp(1.1)
-                                rectangle:(self.x,self.y,self.width,self.height)
-                        Progress
-                            name:"RT"
-                            max:100
-                            value:root.protokol[0]
-                            value2:root.protokol[1]
-                        Progress
-                            name:"PREDENAT"
-                            max:100
-                            value:root.protokol[2]
-                            value2:root.protokol[3]
-                        Progress
-                            name:"DENAT"
-                            max:100
-                            unit2:"second"
-                            value:root.protokol[4]
-                            value2:root.protokol[5]
-                        Progress
-                            name:"ANNEAL"
-                            max:100
-                            unit2:"second"
-                            value:root.protokol[6]
-                            value2:root.protokol[7]
-                
-        
-        BoxLayout
-            size_hint:.95,.1
-            spacing:dp(20)
-            pos_hint:{'center_x':.5,"center_y":.5}
-            padding:0,dp(5),0,dp(5)
-            Btn
-            Btn
-            Btn
-            Btn
- 
+        BoxLayout:
+            spacing:dp(10)
+            BoxVer:
+                padding:dp(5),dp(0),dp(5),dp(0)
+                canvas:
+                    Color:
+                        rgba:1,1,1,1
+                    Line:
+                        rectangle:self.x,self.y,self.width,self.height
+                Label:
+                    text:"PROTOKOL"
+                    size_hint:1,.05
+                    font_size:self.height/1.2
+                    color:0,0,0,1
+                BoxLayout  
+                    spacing:dp(1)
+                    Progress
+                        name:"RT"
+                        max:100
+                        value:root.protokol[0]
+                        value2:root.protokol[1]
+                    Progress
+                        name:"PREDENAT"
+                        max:100
+                        value:root.protokol[2]
+                        value2:root.protokol[3]
+                    Progress
+                        name:"DENAT"
+                        max:100
+                        unit2:"second"
+                        value:root.protokol[4]
+                        value2:root.protokol[5]
+                    Progress
+                        name:"ANNEAL"
+                        max:100
+                        unit2:"second"
+                        value:root.protokol[6]
+                        value2:root.protokol[7]
+            BoxVer:
+                size_hint:.2,1
+                BoxVer
+                    spacing:dp(2)
+                    size_hint:1,.25
+                    BtnLg             
+                        text:"PROTOKOL"
+                        
+                        on_release:root.parent.current="sc1"
+                    BtnLg             
+                        text:"PLATE"
+                        on_release:root.parent.current="sc2"
+                Widget
+            # BoxVer:
+            #     size_hint:.2,1
+            #     Label:
+            #         text:"PLATE"
+            #         size_hint:1,.05
+            #         font_size:self.height/1.2
+            #         color:0,0,0,1
+            #     BoxVer
+            #         PlateClr:
+            #             warna:[69.3/100,100/100,8.6/100]
+            #             text:"FAM"
+            #             alpa:[1] if root.plate[0]==1 else [.1]
+            #         PlateClr  
+            #             text:"ROX"
+            #             warna:[84.7/100,63.5/100,.4/100]
+            #             alpa:[1] if root.plate[1]==1 else [.1]
+            #         PlateClr
+            #             warna:[100/100,0/100,0/100]
+            #             text:"Cy5"
+            #             alpa:[1] if root.plate[2]==1 else [.1]
+            #         PlateClr
+            #             warna:[100/100,40/100,0/100]
+            #             text:"CalRed"
+            #             alpa:[1] if root.plate[3]==1 else [.1]
+            #         PlateClr
+            #             warna:[100/100,100/100,0/100]
+            #             alpa:[1] if root.plate[4]==1 else [.1]
+            #             text:"HEX"
+            #     Widget
+            #         size_hint:1,.06                
+                    
+        Widget:
+            size_hint:1,.1

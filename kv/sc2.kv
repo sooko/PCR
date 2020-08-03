@@ -1,1 +1,83 @@
- 
+<TgColor@ToggleButton>:
+    font_size:self.height/2
+    background_color:0,0,0,0
+    color:0,0,0,1
+    clr:[1,1,1]
+    alpa:[.1]
+    bold:True
+    canvas.before:
+        Color:
+            rgba:self.clr+self.alpa
+        Rectangle:
+            size:self.size
+            pos:self.pos
+    on_state:
+        self.alpa=[1]if self.state=="down" else [.1]
+
+<Sc2>:
+    size_hint:.95,1
+    pos_hint:{"center_x":.5,"center_y":.5}
+    BoxVer:
+        spacing:5
+        padding:0,0,0,dp(5)
+        ScreenTittle:
+            text:"PLATE SETTING"
+        FloatLayout
+            BoxVer:
+                size_hint:1,.2
+                pos_hint:{'center_x':.5,"top":1}
+                Label:
+                    text:"FLOUROPHORES"
+                    font_size:self.height/2
+                    color:1,1,0,1
+                    bold:True
+                BoxLayout:
+                    TgColor
+                        clr:[69.3/100,100/100,8.6/100]
+                        text:"FAM"
+                        state: 
+                            "normal" if root.list_plate[0]==0 else "down"
+                        on_state:
+                            root.list_plate[0]=1 if self.state=="down" else 0
+                    TgColor
+                        clr:[84.7/100,63.5/100,.4/100]
+                        text:"ROX"
+                        state: 
+                            "normal" if root.list_plate[1]==0 else "down"
+                        on_state:
+                            root.list_plate[1]=1 if self.state=="down" else 0
+                    TgColor
+                        clr:[100/100,0/100,0/100]
+                        text:"Cy5"
+                        state: 
+                            "normal" if root.list_plate[2]==0 else "down"
+                        on_state:
+                            root.list_plate[2]=1 if self.state=="down" else 0
+                        
+                    TgColor
+                        clr:[100/100,40/100,0/100]
+                        text:"CalRed"
+                        state: 
+                            "normal" if root.list_plate[3]==0 else "down"
+                        on_state:
+                            root.list_plate[3]=1 if self.state=="down" else 0
+                        
+                    TgColor
+                        clr:[100/100,100/100,0/100]
+                        text:"HEX"
+                        state: 
+                            "normal" if root.list_plate[4]==0 else "down"
+                        on_state:
+                            root.list_plate[4]=1 if self.state=="down" else 0
+        BoxLayout
+            size_hint:1,.1
+            spacing:dp(25)
+            BtnLg
+                text:"SAVE"
+            BtnLg
+                text:"LOAD"
+            Label
+            BtnLg
+                text:"SET"
+                on_press:root.dispatch("on_set")
+            

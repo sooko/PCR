@@ -22,31 +22,36 @@ class Sc1(Screen):
         self.register_event_type("on_set")
         super(Sc1,self).__init__(*args,**kwargs)
     def on_set(self):
-        # print("set")
         pass
 class Sc2(Screen):
-    param=ListProperty([0,0,0,0,0])
+    list_plate=ListProperty([0,0,0,0,0])
     def __init__(self,*args,**kwargs):
+        self.register_event_type("on_set")
         super(Sc2,self).__init__(*args,**kwargs)
+    def on_set(self):
+        pass
 class Home(Screen):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
+    plate=ListProperty([0,0,0,0,0])
     
     def __init__(self,*args,**kwargs):
         super(Home,self).__init__(*args,**kwargs)
 
-# class Sc2(Screen):
-#     param=ListProperty([0,0,0,0,0])
-#     def __init__(self,*args,**kwargs):
-#         super(Sc2,self).__init__(*args,**kwargs)
 
 class Ml(FloatLayout):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
+    plate=ListProperty([0,0,0,0,0])
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
     def set_protokol(self,a):
         self.protokol=a
     def on_protokol(self,a,b):
         print(b)
+    def set_plate(self,a):
+        self.plate=a
+    def on_plate(self,a,b):
+        print(b)
+
 
     
 class SmartPcr(App):
