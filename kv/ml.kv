@@ -1,0 +1,176 @@
+<BtnLg@Btn>:        
+    color:0,0,0,1
+    font_size:self.height/2
+    canvas.before:
+        Color:
+            rgba:0,1,1,.5
+        Rectangle:
+            size:self.size
+            pos:self.pos
+<SldVer@Slider>:
+    orientation:"vertical"
+    cursor_image:"img/white.png"
+    background_vertical:"img/white.png"
+    canvas.before:
+        Color:
+            rgba:1,1,1,.2
+        Line:
+            width:dp(1.1)
+            rectangle:(self.x,self.y,self.width,self.height)
+        Color:
+            rgba:1,1,1,.7
+        Rectangle:
+            size:self.size[0],self.size[1]/self.max*self.value
+            pos:self.pos
+<BoxProtokol@BoxVer>:
+    canvas.before:
+        Color:
+            rgba:1,1,1,.2
+        RoundedRectangle:
+            size:self.size
+            pos:self.pos
+    name:"RT"
+    unit1:"celcius"
+    unit2:"menit"
+    value1:0
+    value2:0 
+    max1:100
+    max2:60
+    BoxLayout
+        FloatLayout
+            BoxVer
+                spacing:dp(2)
+                pos_hint:{"center_x":.5,"y":0}
+                size_hint:.75,.925
+                SldVer:
+                    max:root.max1
+                    value:root.value1
+                    on_value:root.value1=self.value
+                BoxVer
+                    size_hint:1,.1
+                    
+                    Label
+                        text:"{:.0f}".format(root.value1)
+                        font_size:self.height/1.2
+                        color:0,0,0,1
+                        bold:True
+
+                    Label
+                        text:root.unit1
+                        font_size:self.height/1.2
+                        color:0,0,0,1
+                        bold:True
+
+
+        FloatLayout
+            BoxVer
+                spacing:dp(2)
+                pos_hint:{"center_x":.5,"y":0}
+                size_hint:.75,.925
+                SldVer
+                    max:root.max2
+                    value:root.value2
+                    on_value:root.value2=self.value
+                BoxVer
+                    size_hint:1,.1
+                    Label
+                        text:"{:.0f}".format(root.value2)
+                        font_size:self.height/1.2
+                        color:0,0,0,1
+                        bold:True
+
+                    Label
+                        text:root.unit2
+                        font_size:self.height/1.2
+                        color:0,0,0,1
+                        bold:True
+
+
+                    
+    Label:
+        text:root.name
+        size_hint:1,.075
+        color:1,1,0,1
+        bold:True
+        font_size:self.height/2
+<BoxCycles@BoxVer>:
+    canvas.before:
+        Color:
+            rgba:1,1,1,.2
+        RoundedRectangle:
+            size:self.size
+            pos:self.pos
+    name:"CYCLES"
+    unit1:"times"
+    unit2:"menit"
+    value1:0
+    value2:0 
+    max1:60
+    max2:60
+    FloatLayout
+        BoxVer
+            spacing:dp(2)
+            pos_hint:{"center_x":.5,"y":0}
+            size_hint:.75,.925
+            SldVer:
+                max:root.max1
+                value:root.value1
+                on_value:root.value1=self.value
+            BoxVer
+                size_hint:1,.1
+                Label
+                    text:"{:.0f}".format(root.value1)
+                    font_size:self.height/1.2
+                    color:0,0,0,1
+                    bold:True
+                Label
+                    text:root.unit1
+                    font_size:self.height/1.2
+                    color:0,0,0,1
+                    bold:True
+    Label:
+        text:root.name
+        size_hint:1,.075
+        color:1,1,0,1
+        bold:True
+        font_size:self.height/2
+
+<BoxVer@BoxLayout>:
+    orientation:"vertical"
+<ScreenTittle@Label>:
+    text:"SET PROTOKOL"
+    bold:True
+    color:0,0,0,1
+    size_hint:1,.06
+    font_size:self.height/1.5
+    halign:"left"
+    valign:"middle"
+    text_size:self.size
+<Ml>:
+    canvas:
+        Color:
+            rgba:0,1,1,.8
+        Rectangle:
+            size:self.size
+            pos:self.pos
+            source:"img/6880.jpg"
+    BoxVer:
+        TopNav
+        ScreenManager:
+            id:sm
+            Sc1:
+                name:"sc1"
+                on_set:
+                    root.set_protokol(self.param)
+                    sm.current="home"
+            Home:
+                name:"home"
+                protokol:root.protokol
+
+
+            
+            
+            
+
+            
+            

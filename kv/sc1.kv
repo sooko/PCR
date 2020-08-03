@@ -1,0 +1,55 @@
+<Sc1>:
+    size_hint:.95,1
+    pos_hint:{"center_x":.5,"center_y":.5}
+    BoxVer:
+        spacing:5
+        padding:0,0,0,dp(5)
+        ScreenTittle:
+            text:"SET PROTOKOL"
+        BoxLayout
+            spacing:dp(5)
+            BoxProtokol
+                name:"RT"
+                value1:root.param[0]
+                value2:root.param[1]
+                on_value1:root.param[0]=int(self.value1)
+                on_value2:root.param[1]=int(self.value2)
+            BoxProtokol
+                name:"DENAT"
+                value1:root.param[2]
+                value2:root.param[3]
+                on_value1:root.param[2]=int(self.value1)
+                on_value2:root.param[3]=int(self.value2)
+            BoxProtokol
+                name:"PREDENAT"
+                value1:root.param[4]
+                value2:root.param[5]
+                on_value1:root.param[4]=int(self.value1)
+                on_value2:root.param[5]=int(self.value2)
+            BoxProtokol
+                name:"ANNEAL"
+                value1:root.param[6]
+                value2:root.param[7]
+                on_value1:root.param[6]=int(self.value1)
+                on_value2:root.param[7]=int(self.value2)
+            BoxCycles
+                size_hint:.5,1
+                value1:root.param[8]
+                on_value1:root.param[8]=int(self.value1)
+        BoxLayout
+            size_hint:1,.1
+            spacing:dp(25)
+            BtnLg
+                text:"SAVE"
+            BtnLg
+                text:"LOAD"
+            Label
+            BtnLg
+                text:"SET"
+                on_press:root.dispatch("on_set")
+
+            
+
+            
+        
+
