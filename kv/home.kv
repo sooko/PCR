@@ -202,14 +202,12 @@
             BoxLayout:
                 spacing:dp(20)
                 padding:0,dp(5),0,dp(5)
-                
                 BtnLg             
                     text:"PROTOKOL"
                     on_release:
                         root.play_sound()
                         root.parent.current="sc1"
                 BtnLg             
-                    
                     text:"PLATE"
                     on_release:
                         root.play_sound()
@@ -223,3 +221,6 @@
                     on_state:
                         root.play_sound()
                         root.state=1 if self.state=="down" else 0
+    # XCamera1:
+    FloatLayout:
+        id:root_cam

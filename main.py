@@ -24,8 +24,14 @@ from able import BluetoothDispatcher, GATT_SUCCESS,Advertisement
 from kivy.core.audio import SoundLoader
 sound=SoundLoader.load("sound/button-50.wav")
 tit=SoundLoader.load("sound/beep-07.wav")
-if platform=="android":
-    from jnius import autoclass
+from xcamera import XCamera
+# if platform=="android":
+from jnius import autoclass
+# from android.permissions import request_permissions, Permission
+# request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+import os
+class XCamera1(XCamera):
+    pass
 class BLE(BluetoothDispatcher):
     device = alert_characteristic = None
     state = StringProperty("not connect")
@@ -199,11 +205,16 @@ class Home(Screen):
     cycles=NumericProperty(0)
     ble=None
     state=NumericProperty(0)
+    cam=None
     def __init__(self,*args,**kwargs):
         super(Home,self).__init__(*args,**kwargs)
         if platform=="android":
             self.ble=BLE()
-    
+            Clock.schedule_once(self.delay,1)
+    def delay(self,dt):
+        self.cam=XCamera1()
+        self.ids.root_cam.add_widget(self.cam)
+        self.cam.play = False
     def parsing_list(self,data):
         s=str(data)[1:-1]
         return s
@@ -249,6 +260,7 @@ class Ml(FloatLayout):
     plate=ListProperty([0,0,0,0,0])
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
+
     #     Window.bind(on_keyboard=self.Android_back_click)
 
     # def Android_back_click(self,window,key,*largs):
