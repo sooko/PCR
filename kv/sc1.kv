@@ -205,18 +205,24 @@
         BoxLayout
             size_hint:1,.1
             spacing:dp(25)
+            padding:0,dp(5),0,dp(5)
             BtnLg
                 text:"SAVE"
-                on_press:pop_save.ilang=.5
-                
+                on_release:
+                    pop_save.ilang=.5
+                    root.play_sound()
             BtnLg
                 text:"LOAD"
-                on_press:pop_load.ilang=.5
+                on_release:
+                    root.play_sound()
+                    pop_load.ilang=.5
             Label
             
             BtnLg
                 text:"SET"
-                on_press:root.dispatch("on_set")
+                on_release:
+                    root.play_sound()
+                    root.dispatch("on_set")
     
 
 
@@ -319,6 +325,7 @@
                     alpa:slot1.alpa
                     text:"1"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                     
@@ -326,6 +333,7 @@
                     alpa:slot2.alpa
                     text:"2"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                     
@@ -333,6 +341,7 @@
                     alpa:slot3.alpa
                     text:"3"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                     
@@ -340,6 +349,7 @@
                     alpa:slot4.alpa
                     text:"4"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                     
@@ -347,6 +357,7 @@
                     alpa:slot5.alpa
                     text:"5"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                     
@@ -354,6 +365,7 @@
                     alpa:slot6.alpa
                     text:"6"
                     on_release:
+                        root.play_sound()
                         root.load(self.alpa,self.text)
                         pop_load.ilang=10
                 

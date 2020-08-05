@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 600)
-
+from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import StringProperty, NumericProperty, DictProperty, ListProperty, ObjectProperty
 import json
@@ -21,7 +21,11 @@ from navigationdrawer import NavigationDrawer
 from kivy.clock import Clock
 from btn import *
 from able import BluetoothDispatcher, GATT_SUCCESS,Advertisement
-
+from kivy.core.audio import SoundLoader
+sound=SoundLoader.load("sound/button-50.wav")
+tit=SoundLoader.load("sound/beep-07.wav")
+if platform=="android":
+    from jnius import autoclass
 class BLE(BluetoothDispatcher):
     device = alert_characteristic = None
     state = StringProperty("not connect")
@@ -47,7 +51,6 @@ class BLE(BluetoothDispatcher):
             self.start_scan()
     def on_device(self, device, rssi, advertisement):
         name = device.getName()
-        print(name)
         if name and name.startswith(' = mantap'):  
             self.device = device
             self.stop_scan()
@@ -58,7 +61,6 @@ class BLE(BluetoothDispatcher):
         if status == GATT_SUCCESS and state:  
             self.discover_services()  
             self.state = "terhubung"
-            print("terhubung")
         else:  
             self.alert_characteristic = None
             self.close_gatt()
@@ -80,7 +82,11 @@ class BLE(BluetoothDispatcher):
         if self.uids['notifications'] in uuid:
             value = characteristic.getStringValue(0)
             self.notification_value =str(value)
-
+    def on_state(self,a,b):
+        self.do_toast(b)
+    def do_toast(self,b):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
 class Sc1(Screen):
     param=ListProperty([0,0,0,0,0,0,0,0,0])
     btns_state=DictProperty({})
@@ -106,6 +112,7 @@ class Sc1(Screen):
         json.dump(self.d,f)
         f.close()
     def save(self,a):
+        self.play_sound()
         self.d={a:self.param}
         f=open("protokol{}.json".format(a),"w")
         json.dump(self.d,f)
@@ -124,6 +131,11 @@ class Sc1(Screen):
         f=open("btnstate.json","w")
         json.dump(self.btns_state,f)
         f.close()
+    def play_sound(self):
+        sound.play()
+    def do_toast(self,b):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
 class Sc2(Screen):
     list_plate=ListProperty([0,0,0,0,0])
     btns_state=DictProperty({})
@@ -136,7 +148,6 @@ class Sc2(Screen):
             f=open("btnstate1.json","r")
             self.btns_state=json.load(f)
             f.close()
-            # print(self.btns_state)
             for i in self.ids.gridsave.children:
                 i.alpa=self.btns_state[i.text]
             f=open("curent_plate.json","r")
@@ -151,48 +162,103 @@ class Sc2(Screen):
         f.close()
 
     def save(self,a):
+        self.play_sound()
         self.d={a:self.list_plate}
         f=open("plate{}.json".format(a),"w")
         json.dump(self.d,f)
         f.close()
         self.save_state()
     def load(self,a,b):
+        
         if a==1:
             f=open("plate{}.json".format(b),"r")
             self.list_plate=json.load(f)[b]
             f.close()
         else:
-            print("no data")
+            self.do_toast("no data loaded")
+           
     def save_state(self):
         for i in self.ids.gridsave.children:
             self.btns_state[i.text]=i.alpa
         f=open("btnstate1.json","w")
         json.dump(self.btns_state,f)
         f.close()
+    def play_sound(self):
+        sound.play()
+    def do_toast(self,b):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
 class Home(Screen):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
     plate=ListProperty([0,0,0,0,0])
     detik=NumericProperty(0)
     menit=NumericProperty(0)
+    jam=NumericProperty(0)
     waktu=StringProperty("00:00:00")
     temp=NumericProperty(0)
     cycles=NumericProperty(0)
     ble=None
+    state=NumericProperty(0)
     def __init__(self,*args,**kwargs):
         super(Home,self).__init__(*args,**kwargs)
         if platform=="android":
             self.ble=BLE()
+    
+    def parsing_list(self,data):
+        s=str(data)[1:-1]
+        return s
 
+    def play_sound(self):
+        sound.play()
+    def play_tit(self):
+        tit.play()
+    def on_state(self,a,b):
+        if self.ble:
+            if b==1:
+                parser=self.parsing_list(self.protokol+self.plate)
+                self.ble.data_out="*start,{}#\n".format(parser).encode()
+                self.ble.start_alert()
+                Clock.schedule_interval(self.timer,1)
+
+            if b==0:
+                self.ble.data_out="*finish#\n".encode()
+                self.ble.start_alert()
+                Clock.unschedule(self.timer)
+                self.menit=0
+                self.jam=0
+                self.detik=0
+
+
+    def timer(self,dt):
+        self.detik+=1
+        if self.detik==60:
+            self.menit+=1
+            self.play_tit()
+            self.detik=0
+        if self.menit==60:
+            self.jam+=1
+            self.menit=0
+        self.waktu="{:02d}:{:02d}:{:02d}".format(self.jam,self.menit,self.detik)
+
+    def do_toast(self,b):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
 
 class Ml(FloatLayout):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
     plate=ListProperty([0,0,0,0,0])
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
+    #     Window.bind(on_keyboard=self.Android_back_click)
+
+    # def Android_back_click(self,window,key,*largs):
+    #     print(key)
+    #     # if key == 27:
+    #     #     self._scree_manager.current='screen1'#you can create a method here to cache in a list the number of screens and then pop the last visited screen.
+    #     return True
     def set_protokol(self,a):
         self.protokol=a
     def on_protokol(self,a,b):
-        # print(b)
         pass
     def set_plate(self,a):
         self.plate=a
