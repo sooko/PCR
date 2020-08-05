@@ -47,7 +47,8 @@ class BLE(BluetoothDispatcher):
             self.start_scan()
     def on_device(self, device, rssi, advertisement):
         name = device.getName()
-        if name and name.startswith('HM10'):  
+        print(name)
+        if name and name.startswith(' = mantap'):  
             self.device = device
             self.stop_scan()
     def on_scan_completed(self):
@@ -57,6 +58,7 @@ class BLE(BluetoothDispatcher):
         if status == GATT_SUCCESS and state:  
             self.discover_services()  
             self.state = "terhubung"
+            print("terhubung")
         else:  
             self.alert_characteristic = None
             self.close_gatt()
@@ -175,8 +177,11 @@ class Home(Screen):
     waktu=StringProperty("00:00:00")
     temp=NumericProperty(0)
     cycles=NumericProperty(0)
+    ble=None
     def __init__(self,*args,**kwargs):
         super(Home,self).__init__(*args,**kwargs)
+        if platform=="android":
+            self.ble=BLE()
 
 
 class Ml(FloatLayout):
@@ -187,11 +192,13 @@ class Ml(FloatLayout):
     def set_protokol(self,a):
         self.protokol=a
     def on_protokol(self,a,b):
-        print(b)
+        # print(b)
+        pass
     def set_plate(self,a):
         self.plate=a
     def on_plate(self,a,b):
-        print(b)
+        # print(b)
+        pass
 class SmartPcr(App):
     ml=Ml()
     def build(self):

@@ -123,21 +123,21 @@
                         value2:root.protokol[7]
             BoxVer:
                 size_hint:.4,1
-                LAbelDisp:
-                    name:"TIMER"
-                    value:root.waktu
-                    size_hint:1,.2
-                LAbelDisp:
-                    name:"SUHU"
-                    value:"{:.1f}".format(root.temp)
-                    size_hint:1,.2
-                LAbelDisp:
-                    name:"CYCLES"
-                    value:"{}".format(root.cycles)
-                    size_hint:1,.2
+                # LAbelDisp:
+                #     name:"TIMER"
+                #     value:root.waktu
+                #     size_hint:1,.2
+                # LAbelDisp:
+                #     name:"SUHU"
+                #     value:"{:.1f}".format(root.temp)
+                #     size_hint:1,.2
+                # LAbelDisp:
+                #     name:"CYCLES"
+                #     value:"{}".format(root.cycles)
+                #     size_hint:1,.2
                 
-                BoxVer
-                    size_hint:1,.5
+                # BoxVer
+                #     size_hint:1,.5
                 BoxLayout
                     spacing:dp(2)
                     size_hint:1,.1
@@ -147,6 +147,20 @@
                     BtnLg             
                         text:"PLATE"
                         on_release:root.parent.current="sc2"
+                BoxLayout:
+                    size_hint:1,.2
+                    LAbelDisp
+                        name:"CYCLES"
+                        value:"{}".format(root.cycles)
+                    LAbelDisp   
+                        name:"TEMP"
+                        value:"{}".format(root.temp)
+                LAbelDisp
+                    size_hint:1,.2
+                    name:"TOTAL TIME"
+                    value:root.waktu
+                Label:
+
             
         BoxLayout
             size_hint:1,.1
