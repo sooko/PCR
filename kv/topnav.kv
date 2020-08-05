@@ -1,6 +1,6 @@
 <TopNav@BoxLayout>:
-    press:0
-    release:0
+    menu_press:0
+    menu_release:0
     size_hint:1,None
     height:dp(50)
     canvas:
@@ -20,8 +20,8 @@
         size_hint:None,1
         width:dp(50)
         color:0,0,0,1
-        on_press:root.press+=1
-        on_release:root.release+=1
+        on_press:root.menu_press+=1
+        on_release:root.menu_release+=1
     Label:
         text:"SMART RT-PCR INDONESIA"
         halign:"left"

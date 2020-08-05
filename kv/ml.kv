@@ -23,44 +23,49 @@
     valign:"middle"
     text_size:self.size
 <Ml>:
-    canvas.before:
-        Color:
-            rgba:0,1,1,.9
-        Rectangle:
-            size:self.size
-            pos:self.pos
-            source:"img/6880.jpg"
-    BoxVer:
-        TopNav
-        ScreenManager:
-            id:sm
-            transition:SlideTransition(duration=.1)
-            Home:
-                name:"home"
-                protokol:root.protokol
-                plate:root.plate
+    NavigationDrawer:
+        id:nd
+        BoxVer
+        FloatLayout
+            canvas.before:
+                Color:
+                    rgba:0,1,1,.9
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+                    source:"img/6880.jpg"
+            BoxVer:
+                pos_hint:{"center_x":.5,"center_y":.5}
+                TopNav
+                    on_menu_release:nd.toggle_state(True)
+                ScreenManager:
+                    id:sm
+                    transition:SlideTransition(duration=.1)
+                    Home:
+                        name:"home"
+                        protokol:root.protokol
+                        plate:root.plate
+                    Sc1:
+                        name:"sc1"
+                        on_set:
+                            sm.current="home"
+                            root.set_protokol(self.param)
+                    Sc2:
+                        name:"sc2"
+                        on_set:
+                            sm.current="home"
+                            root.set_plate(self.list_plate)
+                    
+                    
+                    
+                    
+                    
+
+
+
+                    
                 
-            Sc1:
-                name:"sc1"
-                on_set:
-                    sm.current="home"
-                    root.set_protokol(self.param)
-            Sc2:
-                name:"sc2"
-                on_set:
-                    sm.current="home"
-                    root.set_plate(self.list_plate)
-            
-            
-            
-            
-            
+                
 
-
-
-            
-            
-            
-
-            
+                
             

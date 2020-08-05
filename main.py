@@ -17,8 +17,68 @@ Builder.load_file('kv/sc2.kv')
 Builder.load_file('kv/sc3.kv')
 Builder.load_file('kv/sc4.kv')
 Builder.load_file('kv/home.kv')
+from navigationdrawer import NavigationDrawer
 from kivy.clock import Clock
 from btn import *
+from able import BluetoothDispatcher, GATT_SUCCESS,Advertisement
+
+class BLE(BluetoothDispatcher):
+    device = alert_characteristic = None
+    state = StringProperty("not connect")
+    notification_value = StringProperty('')
+    uids = {
+        'string': 'ffe1',
+        'counter_reset': 'ffe1',
+        'counter_increment': 'ffe1',
+        'counter_read': 'ffe1',
+        'notifications': 'ffe1'
+    }
+    def __init__(self, *args, **kwargs):
+        super(BLE, self).__init__(**kwargs)
+        self.data_out =bytearray([])
+        self.start_alert()
+    def start_alert(self, *args, **kwargs):
+        if self.alert_characteristic:  
+            self.alert(self.alert_characteristic)
+        elif self.device:
+            self.connect_gatt(self.device)
+        else:
+            self.stop_scan()
+            self.start_scan()
+    def on_device(self, device, rssi, advertisement):
+        name = device.getName()
+        if name and name.startswith('HM10'):  
+            self.device = device
+            self.stop_scan()
+    def on_scan_completed(self):
+        if self.device:
+            self.connect_gatt(self.device)  
+    def on_connection_state_change(self, status, state):
+        if status == GATT_SUCCESS and state:  
+            self.discover_services()  
+            self.state = "terhubung"
+        else:  
+            self.alert_characteristic = None
+            self.close_gatt()
+            self.state = "sambungan gagal"
+            self.start_alert()
+    def on_services(self, status, services):
+        self.alert_characteristic = services.search('ffe1')
+        self.alert(self.alert_characteristic)
+        self.services = services
+        if self.state == "terhubung":
+            self.enab()
+    def alert(self, characteristic):
+        if self.state == "terhubung":
+            self.write_characteristic(characteristic, self.data_out)
+    def enab(self):
+        self.enable_notifications(self.services.search('ffe1'))
+    def on_characteristic_changed(self, characteristic):
+        uuid = characteristic.getUuid().toString()
+        if self.uids['notifications'] in uuid:
+            value = characteristic.getStringValue(0)
+            self.notification_value =str(value)
+
 class Sc1(Screen):
     param=ListProperty([0,0,0,0,0,0,0,0,0])
     btns_state=DictProperty({})
