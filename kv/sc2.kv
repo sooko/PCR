@@ -74,10 +74,153 @@
             spacing:dp(25)
             BtnLg
                 text:"SAVE"
+                on_release:pop_save.ilang=.5
             BtnLg
                 text:"LOAD"
+                on_release:pop_load.ilang=.5
             Label
             BtnLg
                 text:"SET"
                 on_press:root.dispatch("on_set")
-            
+    
+
+    FloatLayout:
+        ilang:10
+        id:pop_save
+        pos_hint:{"center_x":.5,"center_y":self.ilang}
+
+        Button
+            background_color:0,0,0,.9
+            pos_hint:{"center_x":.5,"center_y":.5}
+            on_press:self.parent.ilang=10
+        BoxVer:
+            canvas:
+                Color:
+                    rgba:0,0,1,1
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+            size_hint:.5,.5
+            pos_hint:{"center_x":.5,"center_y":.5}
+            Button:
+                background_color:0,0,0,0
+                text:"SAVE PROTOKOL"
+                bold:True
+                color:0,0,0,1
+                font_size:self.height/1.5
+                size_hint:1,.2
+            GridLayout
+                id:gridsave
+                spacing:dp(2)
+                padding:dp(5)
+                cols:3
+                BtnGrid
+                    id:slot1
+                    text:"1"
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+                BtnGrid
+                    id:slot2
+                    text:"2"
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+                BtnGrid
+                    text:"3"
+                    id:slot3
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+                BtnGrid
+                    text:"4"
+                    id:slot4
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+                BtnGrid
+                    text:"5"
+                    id:slot5
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+                BtnGrid
+                    id:slot6
+                    text:"6"
+                    on_release:
+                        root.save(self.text)
+                        pop_save.ilang=10
+
+
+    FloatLayout:
+        ilang:10
+        id:pop_load
+        pos_hint:{"center_x":.5,"center_y":self.ilang}
+        Button
+            background_color:0,0,0,.9
+            pos_hint:{"center_x":.5,"center_y":.5}
+            on_press:self.parent.ilang=10
+        BoxVer:
+            canvas:
+                Color:
+                    rgba:0,0,1,1
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+            size_hint:.5,.5
+            pos_hint:{"center_x":.5,"center_y":.5}
+            Button:
+                background_color:0,0,0,0
+                text:"LOAD PROTOKOL"
+                bold:True
+                color:0,0,0,1
+                font_size:self.height/1.5
+                size_hint:1,.2
+            GridLayout
+                spacing:dp(2)
+                padding:dp(5)
+                cols:3
+                BtnGridL
+                    alpa:slot1.alpa
+                    text:"1"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                    
+                BtnGridL
+                    alpa:slot2.alpa
+                    text:"2"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                    
+                BtnGridL
+                    alpa:slot3.alpa
+                    text:"3"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                    
+                BtnGridL
+                    alpa:slot4.alpa
+                    text:"4"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                    
+                BtnGridL
+                    alpa:slot5.alpa
+                    text:"5"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                    
+                BtnGridL
+                    alpa:slot6.alpa
+                    text:"6"
+                    on_release:
+                        root.load(self.alpa,self.text)
+                        pop_load.ilang=10
+                
+
+        
