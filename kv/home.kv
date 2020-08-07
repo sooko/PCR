@@ -28,11 +28,7 @@
             text:root.unit
             markup:True
             font_size:self.height/1
-        
-
         # font_name:"fonts/bebas.ttf"
-        
-
 <TgStart@ToggleButton>
     background_color:0,0,0,0
     color:0,0,0,1
@@ -48,6 +44,8 @@
     on_state:
         self.text="CANCEL" if self.state=="down" else "START"
         root.warna=[0,1,1,.3] if self.state=="down" else [0,1,1,.6]
+        root.color=[0,0,0,.3] if self.state=="down" else [0,0,0,1]
+        
         
 <PlateClr@Label>:
     color:0,0,0,1
@@ -68,10 +66,22 @@
     value2:0
     unit1:"celcius"
     unit2:"menit"
+    ambeyen:0
     FloatLayout
         Widget:
             pos_hint:{'center_x':.5,"center_y":.5}
             canvas:
+                Color:
+                    rgba:0,1,0,root.ambeyen-.2
+                Rectangle:
+                    size:self.size
+                    pos:self.pos
+                Color:
+                    
+                    rgba:0,1,0,root.ambeyen
+                Line:
+                    width:dp(1.5)
+                    rectangle:(self.x,self.y,self.width,self.height)
                 Color:
                     rgba:1,1,1,.2
                 Rectangle:
@@ -108,6 +118,7 @@
         color:1,1,0,1
         font_size:self.height/1.5
         bold:True
+
 <Home>:
     size_hint:.975,1
     pos_hint:{"right":.99,"center_y":.5}
@@ -145,7 +156,8 @@
                     color:0,0,0,1
                 
                 BoxLayout  
-                    spacing:dp(1)
+                    spacing:dp(2)
+                    id:root_step
                     Progress
                         name:"RT"
                         max:100
@@ -183,7 +195,7 @@
                         height:sv.height/8
                     LAbelDisp:
                         name:"TEMP"
-                        value:"{}".format(root.temp)
+                        value:"{:.1f}".format(root.temp)
                         size_hint:1,None
                         height:sv.height/8
                         unit:"               [sup]o[/sup]c"
@@ -203,14 +215,17 @@
                 spacing:dp(20)
                 padding:0,dp(5),0,dp(5)
                 BtnLg             
+                    text:"SET CAMERA"
+                    on_release:
+                        root.dispatch("on_setting_cam")
+
+                BtnLg             
                     text:"PROTOKOL"
                     on_release:
-                        root.play_sound()
                         root.parent.current="sc1"
                 BtnLg             
                     text:"PLATE"
                     on_release:
-                        root.play_sound()
                         root.parent.current="sc2"
                         
             BoxLayout
@@ -221,6 +236,16 @@
                     on_state:
                         root.play_sound()
                         root.state=1 if self.state=="down" else 0
-    # XCamera1:
     FloatLayout:
-        id:root_cam
+        id:frame_cam
+        ilang:10
+        pos_hint:{"center_x":.5,"center_y":self.ilang}
+        BoxLayout:
+            pos_hint:{"center_x":.5,"center_y":.5}
+            id:root_cam
+        BtnLg
+            pos_hint:{"y":.04,"right":1}
+            text:"back"
+
+            size_hint:.1,.05
+            on_press:root.close_cam()

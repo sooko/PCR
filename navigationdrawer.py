@@ -28,13 +28,14 @@ Builder.load_string('''
                  (1-root.side_panel_opacity)*root._anim_progress
         canvas:
             Color:
-                rgba: (0,0,0,1)
+                rgba: (0,0,0,0)
             Rectangle:
                 pos: self.pos
                 size: self.size
         canvas.after:
             Color:
-                rgba: (0,0,0,(1-root._anim_progress)*root.side_panel_darkness)
+                # rgba: (0,0,0,(1-root._anim_progress)*root.side_panel_darkness)
+                rgba:0,0,0,0
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -48,29 +49,33 @@ Builder.load_string('''
         size: root.size
         canvas:
             Color:
-                rgba: (0,0,0,1)
+                rgba: (0,0,0,0)
             Rectangle:
                 pos: self.pos
                 size: self.size
-        canvas.after:
-            Color:
-                rgba: (0,0,0,root._anim_progress*root.main_panel_darkness)
-            Rectangle:
-                size: self.size
-                pos: self.pos
-    Image:
+        # canvas.after:
+        #     Color:
+        #         rgba: (0,0,0,root._anim_progress*root.main_panel_darkness)
+        #     Rectangle:
+        #         size: self.size
+        #         pos: self.pos
+    Label
         id: joinimage
-        opacity: min(sidepanel.opacity, 0 if root._anim_progress < 0.00001 \
-                 else min(root._anim_progress*40,1))
-        source: root._choose_image(root._main_above, root.separator_image)
-        mipmap: False
-        width: root.separator_image_width
-        height: root._side_panel.height
-        x: (mainpanel.x - self.width + 1) if root._main_above \
-           else (sidepanel.x + sidepanel.width - 1)
-        y: root.y
-        allow_stretch: True
-        keep_ratio: False
+        
+    # Image:
+    #     color:0,0,0,0
+    #     id: joinimage
+    #     opacity: min(sidepanel.opacity, 0 if root._anim_progress < 0.00001 \
+    #              else min(root._anim_progress*40,1))
+    #     source: root._choose_image(root._main_above, root.separator_image)
+    #     mipmap: False
+    #     width: root.separator_image_width
+    #     height: root._side_panel.height
+    #     x: (mainpanel.x - self.width + 1) if root._main_above \
+    #        else (sidepanel.x + sidepanel.width - 1)
+    #     y: root.y
+    #     allow_stretch: True
+    #     keep_ratio: False
 ''')
 class NavigationDrawerException(Exception):
     pass

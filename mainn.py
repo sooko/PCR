@@ -1,10 +1,11 @@
-from kivy.uix.floatlayout import FloatLayout
 from kivy.utils import platform
 from kivy.lang import Builder
+from kivy.uix.floatlayout import FloatLayout
 from kivy.app import App
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 600)
+from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import StringProperty, NumericProperty, DictProperty, ListProperty, ObjectProperty
 import json
@@ -18,26 +19,24 @@ Builder.load_file('kv/home.kv')
 from navigationdrawer import NavigationDrawer
 from kivy.clock import Clock
 from btn import *
-import cv2
 from able import BluetoothDispatcher, GATT_SUCCESS,Advertisement
-import os
+from kivy.core.audio import SoundLoader
+sound=SoundLoader.load("sound/button-50.wav")
+tit=SoundLoader.load("sound/beep-07.wav")
 from xcamera import XCamera
 if platform=="android":
     from jnius import autoclass
     from android.permissions import request_permissions, Permission
     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+    import os
     try:
         os.mkdir("/storage/emulated/0/DCIM/PCR")
     except:
         pass
-import threading
-from struct import unpack
-from binascii import hexlify,unhexlify
-import time
 class XCamera1(XCamera):
     pass
+
 class BLE(BluetoothDispatcher):
-    
     device = alert_characteristic = None
     state = StringProperty("not connect")
     notification_value = StringProperty('')
@@ -50,7 +49,6 @@ class BLE(BluetoothDispatcher):
         'notifications': 'ffe1'
     }
     def __init__(self, *args, **kwargs):
-        self.register_event_type("on_data_masuk")
         super(BLE, self).__init__(**kwargs)
         self.data_out =bytearray([])
         self.start_alert()
@@ -88,10 +86,14 @@ class BLE(BluetoothDispatcher):
     def alert(self, characteristic):
         if self.state == "terhubung":
             self.karak=characteristic
+
     def write(self,data):
         if self.state == "terhubung":
             if self.karak:
                 self.write_characteristic(self.karak,data)
+        else:
+            self.do_toast("bluetooth not connect")
+            # print(self.data_out)
     def enab(self):
         self.enable_notifications(self.services.search('ffe1'))
     def on_characteristic_changed(self, characteristic):
@@ -99,15 +101,11 @@ class BLE(BluetoothDispatcher):
         if self.uids['notifications'] in uuid:
             value = characteristic.getStringValue(0)
             self.notification_value =str(value)
-            # print(self.notification_value)
-            self.dispatch("on_data_masuk")
     def on_state(self,a,b):
         self.do_toast(b)
     def do_toast(self,b):
         PythonActivity = autoclass('org.kivy.android.PythonActivity')
         PythonActivity.toastError(b)
-    def on_data_masuk(self):
-        pass
 class Sc1(Screen):
     param=ListProperty([0,0,0,0,0,0,0,0,0])
     btns_state=DictProperty({})
@@ -153,11 +151,10 @@ class Sc1(Screen):
         json.dump(self.btns_state,f)
         f.close()
     def play_sound(self):
-        pass
+        sound.play()
     def do_toast(self,b):
-        pass
-        # PythonActivity = autoclass('org.kivy.android.PythonActivity')
-        # PythonActivity.toastError(b)
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
 class Sc2(Screen):
     list_plate=ListProperty([0,0,0,0,0])
     btns_state=DictProperty({})
@@ -182,7 +179,9 @@ class Sc2(Screen):
         f=open("curent_plate.json","w")
         json.dump(self.d,f)
         f.close()
+
     def save(self,a):
+        self.play_sound()
         self.d={a:self.list_plate}
         f=open("plate{}.json".format(a),"w")
         json.dump(self.d,f)
@@ -202,9 +201,11 @@ class Sc2(Screen):
         json.dump(self.btns_state,f)
         f.close()
     def play_sound(self):
-        pass
+        sound.play()
     def do_toast(self,b):
-        pass
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
+import time
 class Home(Screen):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
     plate=ListProperty([0,0,0,0,0])
@@ -217,45 +218,22 @@ class Home(Screen):
     ble=None
     state=NumericProperty(0)
     cam=None
-    step=NumericProperty(0)
     def __init__(self,*args,**kwargs):
-        self.register_event_type("on_setting_cam")
-        self.register_event_type("on_step_run")
         super(Home,self).__init__(*args,**kwargs)
         if platform=="android":
             self.ble=BLE()
-            self.ble.on_data_masuk=self.on_data_masuk
-    def on_data_masuk(self):
-        # print(self.ble.notification_value)
-        
-        arr=unhexlify(self.ble.notification_value)
-        # print(arr)
-        un=unpack(">HBBB",arr)
-        print(un)
-        self.temp=un[0]/10
-        self.step=un[1]
-        self.cycles=un[3]
-
-        
-        
-    def on_step(self,a,b):
-        if b!=0:
-            for i in self.ids.root_step.children:
-                i.ambeyen=0
-
-            self.ids.root_step.children[4-b].ambeyen=.9
-        self.dispatch("on_step_run")
-    def on_step_run(self):
-        pass
-    def on_setting_cam(self):
-        pass
+            Clock.schedule_once(self.delay,1)
+    def delay(self,dt):
+        self.cam=XCamera1()
+        self.ids.root_cam.add_widget(self.cam)
+        self.cam.play = False
     def parsing_list(self,data):
         s=str(data)[1:-1]
         return s
     def play_sound(self):
-        pass
+        sound.play()
     def play_tit(self):
-        pass
+        tit.play()
     def on_state(self,a,b):
         print(b)
         if self.ble:
@@ -281,25 +259,26 @@ class Home(Screen):
         self.detik+=1
         if self.detik==60:
             self.menit+=1
+            self.play_tit()
             self.detik=0
         if self.menit==60:
             self.jam+=1
             self.menit=0
         self.waktu="{:02d}:{:02d}:{:02d}".format(self.jam,self.menit,self.detik)
     def do_toast(self,b):
-        pass
-        # PythonActivity = autoclass('org.kivy.android.PythonActivity')
-        # PythonActivity.toastError(b)
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity.toastError(b)
+    def show_cam(self):
+        self.ids.frame_cam.ilang=.5
+        self.cam.play=True
+    def close_cam(self):
+        self.cam.play=False
+        self.ids.frame_cam.ilang=10
 class Ml(FloatLayout):
     protokol=ListProperty([0,0,0,0,0,0,0,0,0])
     plate=ListProperty([0,0,0,0,0])
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
-        Clock.schedule_once(self.delay,3)
-    def delay(self,dt):
-        if platform=="android":
-            self.ids.root_cam.add_widget(XCamera1())
-
     def set_protokol(self,a):
         self.protokol=a
     def on_protokol(self,a,b):
@@ -307,30 +286,13 @@ class Ml(FloatLayout):
     def set_plate(self,a):
         self.plate=a
     def on_plate(self,a,b):
+        # print(b)
         pass
-    def stop_cam(self):
-        if len(self.ids.root_cam.children)>0:
-            self.ids.root_cam.children[0].play=False
-    def start_cam(self):
-        if len(self.ids.root_cam.children)>0:
-            self.ids.root_cam.children[0].play=True
-        # if len(self.ids.cam.children)>0:
-        #     self.ids.sc3.children[0].play=True
-    def on_step_run(self,b):
-        if b>2:
-            self.start_cam()
-        else:
-            self.stop_cam()
 class Sc3(Screen):
     pass
 class SmartPcr(App):
     ml=Ml()
     def build(self):
         return self.ml
-    # def on_pause(self):
-    #     self.ml.stop_cam()
-    #     return True
-    # def on_resume(self):
-    #     self.ml.start_cam()
 if __name__=="__main__":
     SmartPcr().run()
