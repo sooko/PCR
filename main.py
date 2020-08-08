@@ -334,3 +334,4 @@ class SmartPcr(App):
     #     self.ml.start_cam()
 if __name__=="__main__":
     SmartPcr().run()
+    
