@@ -1,0 +1,32 @@
+<TopNav@BoxLayout>:
+    menu_press:0
+    menu_release:0
+    size_hint:1,None
+    height:dp(50)
+    canvas:
+        Color:
+            rgba:0,1,1,.3
+        Rectangle:
+            size:self.size
+            pos:self.pos
+        Color:
+            rgba:1,1,1,1
+        Rectangle:
+            size:self.size[0],dp(20)
+            pos:self.pos
+            source:"navimg/navgrad.png"
+    BtnImg:
+        source:"img/menu.png"
+        size_hint:None,1
+        width:dp(50)
+        color:0,0,0,1
+        on_press:root.menu_press+=1
+        on_release:root.menu_release+=1
+    Label:
+        text:"SMART RT-PCR INDONESIA"
+        halign:"left"
+        valign:"middle"
+        text_size:self.size
+        font_size:self.height/2
+        color:0,0,0,1
+        bold:True

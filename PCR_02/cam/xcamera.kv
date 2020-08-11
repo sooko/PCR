@@ -1,0 +1,32 @@
+<XCamera>:
+    pos_hint:{"center_x":.5,"center_y":.5}
+    icon: u"[font=data/icons.ttf]\ue800[/font]"
+    icon_color: (0.13, 0.58, 0.95, 0.8)
+    id: camera
+    resolution: 1920, 1080
+    allow_stretch: True
+    Button:
+        size_hint:None,None
+        size:dp(200),dp(30)
+        text:"back"
+        center_x: root.center_x
+        # right: root.width/2
+        y:root.y+dp(5)
+        on_release:root.dispatch("on_back")
+<LCamera>:
+    pos_hint:{"center_x":.5,"center_y":.5}
+    resolution: 1920, 1080
+    Button:
+        background_color:0,0,0,0
+        pos_hint:{"center_x":.5,"center_y":.5}
+    Image
+        pos_hint:{"center_x":.5,"center_y":.5}
+        id:img
+    Button:
+        size_hint:None,None
+        size:dp(200),dp(30)
+        text:"back"
+        center_x: root.center_x
+        # right: root.width/2
+        y:root.y+dp(5)
+        on_release:root.dispatch("on_back")
