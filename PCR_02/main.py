@@ -9,6 +9,7 @@ if platform=="android":
         os.mkdir("/storage/emulated/0/DCIM/PCR")
     except:
         pass
+
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 600)
@@ -33,6 +34,8 @@ from kivy.metrics import dp,sp
 from screens.screen1 import Sc1
 from screens.screen2 import Sc2
 from cam.xcamera import XCamera,LCamera
+import threading
+from lib.chart import Chart
 class Ml(FloatLayout):
     war=StringProperty("")
     protokol=ListProperty([0,0,0,0,0,0,0,0,0]) 
@@ -49,29 +52,39 @@ class Ml(FloatLayout):
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
         if platform=="android":
-            self.do_toast("preparing camera . .")
             self.ble=BLE()
             self.ble.on_data_masuk=self.on_data_masuk
             Clock.schedule_once(self.delay,1)
         else:
-            Clock.schedule_once(self.add_lcam,2)
-    def add_lcam(self,dt):
+            Clock.schedule_once(self.add_linuxcam,1)
+    def add_linuxcam(self,dt):
             self.lcam=LCamera(on_back=self.on_btn_camera_back)
             self.ids.root_cam.add_widget(self.lcam)
             self.lcam.pos_hint={"center_x":.5,"center_y":.5}
-
+            self.lcam.play=False
     def delay(self,dt):
-        self.do_toast("preparing camera. . .")
         Clock.schedule_once(self.delay2,1)
     def delay2(self,dt):
-        self.do_toast("preparing camera. . . . ")
         Clock.schedule_once(self.delay3,1)
     def delay3(self,dt):
-        self.ids.root_cam.add_widget(XCamera(on_back=self.on_btn_camera_back))
-        self.do_toast("camera ready")
+        self.do_toast("preparing camera")
+        self.ids.root_cam.add_widget(XCamera(on_camera_ready=self.on_camera_ready))
     def on_btn_camera_back(self,instance):
-        print("cam back")
-        self.ids.root_cam.ilang=10
+        if len(self.ids.root_cam.children)>0:
+            if platform=="android":
+                self.ids.root_cam.children[0].played=False
+            else:
+                self.ids.root_cam.children[0].play=False
+        self.ids.main_manager.current="main_screen"
+    def on_btn_set_camera_release(self):
+        self.ids.main_manager.current="cam_screen"
+        if len(self.ids.root_cam.children)>0:
+            if platform!="android":
+                self.ids.root_cam.children[0].play=True
+            else:
+                self.ids.root_cam.children[0].played=True
+    def on_camera_ready(self,instance):
+        self.do_toast("camera ready")
     def set_warna(self,dt,b):
         self.ids.line.size=b
         self.ids.bunder.warna=(dt[0]/255,dt[1]/255,dt[2]/255,dt[3]/255)
@@ -133,9 +146,8 @@ import sys
 class PCR(App):
     def build(self):
         return Ml()
+
     def on_stop(self):
         sys.exit()
-    
 if __name__=="__main__":
     PCR().run()
-    
