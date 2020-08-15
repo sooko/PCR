@@ -13,13 +13,13 @@ from kivy.clock import Clock
 import PIL
 from PIL import ImageOps
 from PIL import Image as Gambar
-
 if platform == 'android':
     from .android_api import (LANDSCAPE, PORTRAIT, take_picture, set_orientation, get_orientation)
 from binascii import hexlify,unhexlify
 from numpy import asarray
+
 def get_filename():
-    return datetime.datetime.now().strftime('%Y-%m-%d %H.%M.%S.jpg')
+    return datetime.datetime.now().strftime('%Y-%m-%d %H.%M.%S')
 def is_android():
     return platform == 'android'
 def check_camera_permission():
@@ -35,6 +35,51 @@ def check_request_camera_permission(callback=None):
         permissions = [Permission.CAMERA]
         request_permissions(permissions, callback)
     return had_permission
+Builder.load_string("""
+<XCameraIconButton>
+    icon_color: (0, 0, 0, 1)
+    _down_color: 1,1,1,1
+    icon_size: dp(50)
+    canvas.before:
+        Color:
+            rgba: self.icon_color if self.state == 'normal' else self._down_color
+        Ellipse:
+            pos: self.pos
+            size: self.size
+    size_hint: None, None
+    size: self.icon_size, self.icon_size
+    font_size: self.icon_size/2
+
+<XCamera>:
+    pos_hint:{"center_x":.5,"center_y":.5}
+    icon: u"[font=data/icons.ttf]\ue800[/font]"
+    icon_color: (0.13, 0.58, 0.95, 0.8)
+    id: camera
+    resolution: 1920, 1080
+    allow_stretch: True
+    icon: u"[font=data/icons.ttf]\ue800[/font]"
+    icon_size: dp(70)
+    # size_hint:.5,.5
+    XCameraIconButton:
+        id: shoot_button
+        markup: True
+        text: root.icon
+        icon_color: root.icon_color
+        icon_size: root.icon_size
+        on_release: root.shoot("test")
+        right: root.width - dp(5)
+        center_y: root.center_y
+<LCamera>:
+    pos_hint:{"center_x":.5,"center_y":.5}
+    resolution: 1920, 1080
+    Button:
+        background_color:0,0,0,0
+        pos_hint:{"center_x":.5,"center_y":.5}
+    Image
+        pos_hint:{"center_x":.5,"center_y":.5}
+        id:img
+""")
+
 class XCameraIconButton(ButtonBehavior, Label):
     pass
 class XCamera(Camera):
@@ -45,7 +90,7 @@ class XCamera(Camera):
     warna=ListProperty([])
     played=BooleanProperty(False)
     def __init__(self, **kwargs):
-        Builder.load_file("cam/xcamera.kv")
+        # Builder.load_file("cam/xcamera.kv")
         self.register_event_type("on_back")
         super().__init__(**kwargs)
     def _on_index(self, *largs):
@@ -67,7 +112,6 @@ class XCamera(Camera):
         size = self.arrtexture.size
         pil_image = PIL.Image.frombytes(mode='RGBA', size=size, data=image_data)
         data=asarray(pil_image)
-        print(pil_image)
         b = (data[int(size[1]/2), int(size[0]/2)])
         self.warna=b.tolist()
         if self.played:
@@ -77,11 +121,11 @@ class XCamera(Camera):
     def _camera_loaded(self, *largs):
         self.arrtexture = self._camera.texture
         self.arrtexture_size = list(self.arrtexture.size)
-    def shoot(self):
+    def shoot(self,tittle):
         def on_success(filename):
             self.dispatch('on_picture_taken', filename)
         filename = get_filename()
-        take_picture(self, filename, on_success)
+        take_picture(self, filename+" nama="+tittle+".jpg", on_success)
     def on_back(self):
         self.played=False
 
@@ -92,12 +136,11 @@ import numpy as np
 from kivy.uix.floatlayout import FloatLayout
 class LCamera(FloatLayout):
     play=BooleanProperty(True)
-    Builder.load_file("cam/xcamera.kv")
     def __init__(self,*args, **kwargs):
         self.register_event_type("on_back")
         super(LCamera, self).__init__(*args,**kwargs)
         self.capture = cv2.VideoCapture(1)
-        Clock.schedule_interval(self.update, .1)
+        Clock.schedule_interval(self.update, .05)
     def update(self, dt):
         ret, frame = self.capture.read()
         if ret:

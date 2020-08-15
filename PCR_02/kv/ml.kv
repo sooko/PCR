@@ -74,7 +74,7 @@
                                                             value2:root.protokol[7]
                                                 Chart:
                                                     major_y:10
-                                                    major_x:root.protokol[8]
+                                                    major_x:root.protokol[8] 
                                         ScrollView:
                                             size_hint:.275,1
                                             id:sv
@@ -99,6 +99,14 @@
                                                     size_hint:1,None
                                                     height:sv.height/8
                                                     unit:"               [sup]of {}[/sup]".format(root.protokol[8])
+                                                LAbelDisp:
+                                                    id:display_step
+                                                    name:"STEP"
+                                                    # value:"{}".format(root.step) if root.step<5 else "capture"
+                                                    size_hint:1,None
+                                                    height:sv.height/8
+                                                    # unit:"               [sup]of {}[/sup]".format(root.protokol[8])
+                                                
 
                                     BoxLayout
                                         size_hint:1,.1
@@ -121,6 +129,8 @@
                                             size_hint:1.23,1
                                             on_state:
                                                 root.state=1 if self.state=="down" else 0
+
+                                            state:"down" if root.state==1 else "normal"
                             Sc1
                                 name:"protokol_settings"
                                 on_set:
@@ -145,3 +155,5 @@
                 on_press:root.on_btn_camera_back(self)
 
 
+    # Image:
+    #     source:root.loading_image

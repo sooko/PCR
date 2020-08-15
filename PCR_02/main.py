@@ -9,7 +9,6 @@ if platform=="android":
         os.mkdir("/storage/emulated/0/DCIM/PCR")
     except:
         pass
-
 from kivy.config import Config
 Config.set('graphics', 'width', 1024)
 Config.set('graphics', 'height', 600)
@@ -18,7 +17,6 @@ from kivy.uix.floatlayout import FloatLayout
 from lib.navigationdrawer import *
 from lib.btn import *
 from lib.ble import *
-from lib.clr import rgb_clr
 from kivy.app import App
 Builder.load_file("kv/ml.kv")
 Builder.load_file("kv/material.kv")
@@ -36,9 +34,12 @@ from screens.screen2 import Sc2
 from cam.xcamera import XCamera,LCamera
 import threading
 from lib.chart import Chart
+from kivy.core.audio import SoundLoader
+
 class Ml(FloatLayout):
+    sound = SoundLoader.load('sound/telolet1.wav')
     war=StringProperty("")
-    protokol=ListProperty([0,0,0,0,0,0,0,0,0]) 
+    protokol=ListProperty([0,0,0,0,0,0,0,0,1])
     plate=ListProperty([0,0,0,0,0])
     detik=NumericProperty(0)
     menit=NumericProperty(0)
@@ -47,65 +48,90 @@ class Ml(FloatLayout):
     cycles=NumericProperty(0)
     step=NumericProperty(0)
     state=NumericProperty(0)
+    start=NumericProperty(0)
+    flr=NumericProperty(0)
+    camera_isready=BooleanProperty(False)
     cam=None
     ble=None
+    loading_image=StringProperty("sooko.png")
+    dict_step=DictProperty({0:"-",1:"RT",2:"PREDENAT",3:"DENAT",4:"ANNEAL",5:"CAPTURE"})
     def __init__(self,*args,**kwargs):
         super(Ml,self).__init__(*args,**kwargs)
         if platform=="android":
             self.ble=BLE()
+
             self.ble.on_data_masuk=self.on_data_masuk
-            Clock.schedule_once(self.delay,1)
+
+            self.run_cam_thread()
         else:
             Clock.schedule_once(self.add_linuxcam,1)
+    def run_cam_thread(self):
+        if self.ble:
+            data_out="*finish#\r\n"
+            self.ble.write(data_out.encode())
+            
+        Clock.schedule_once(self.delay,5)
     def add_linuxcam(self,dt):
             self.lcam=LCamera(on_back=self.on_btn_camera_back)
             self.ids.root_cam.add_widget(self.lcam)
             self.lcam.pos_hint={"center_x":.5,"center_y":.5}
             self.lcam.play=False
+            self.loading_image="img/white.png"
     def delay(self,dt):
-        Clock.schedule_once(self.delay2,1)
-    def delay2(self,dt):
-        Clock.schedule_once(self.delay3,1)
-    def delay3(self,dt):
-        self.do_toast("preparing camera")
         self.ids.root_cam.add_widget(XCamera(on_camera_ready=self.on_camera_ready))
+        self.loading_image="img/white.png"
     def on_btn_camera_back(self,instance):
         if len(self.ids.root_cam.children)>0:
             if platform=="android":
                 self.ids.root_cam.children[0].played=False
+                light_off="*lightoff#\n".encode()
+                if self.ble:
+                    self.ble.write(light_off)
             else:
                 self.ids.root_cam.children[0].play=False
         self.ids.main_manager.current="main_screen"
     def on_btn_set_camera_release(self):
-        self.ids.main_manager.current="cam_screen"
         if len(self.ids.root_cam.children)>0:
-            if platform!="android":
-                self.ids.root_cam.children[0].play=True
+            if platform=="android":
+                if self.camera_isready:
+                    self.ids.root_cam.children[0].played=True
+                    self.ids.main_manager.current="cam_screen"
+                    light_on="*lighton#\n".encode()
+                    if self.ble:
+                        self.ble.write(light_on)
+                else:
+                    self.do_toast("smart camera is not ready yet")
             else:
-                self.ids.root_cam.children[0].played=True
+                self.ids.root_cam.children[0].play=True
+                self.ids.main_manager.current="cam_screen"
     def on_camera_ready(self,instance):
-        self.do_toast("camera ready")
-    def set_warna(self,dt,b):
-        self.ids.line.size=b
-        self.ids.bunder.warna=(dt[0]/255,dt[1]/255,dt[2]/255,dt[3]/255)
-        tup=(dt[0],dt[1],dt[2])
-        for i in rgb_clr.keys():
-            if i[0] in range(tup[0]-15,tup[0]+15) and i[1] in range(tup[1]-15,tup[1]+15) and i[2] in range(tup[2]-15,tup[2]+15):
-                self.war=rgb_clr[i][0]
-        self.ids.lbl_clr.text=self.war
+        self.camera_isready=True
     def on_data_masuk(self):
         arr=unhexlify(self.ble.notification_value)
-        un=unpack(">HBBB",arr)
-        self.temp=un[0]/10
-        self.step=un[1]
-        self.cycles=un[3]
+        un=unpack(">BHBBB",arr)
+        print(un)
+        self.start=un[0]
+        self.temp=un[1]/10
+        self.step=un[2]
+        self.flr=un[4]
+        self.cycles=un[4]
     def on_step(self,a,b):
-        if b!=0:
-            for i in self.ids.root_step.children:
-                i.ambeyen=0
-            self.ids.root_step.children[4-b].ambeyen=.9
+        print(b)
+        if b==5:
+            self.ids.root_cam.children[0].shoot("{}".format(self.flr))
+        if b in self.dict_step.keys():
+            self.ids.display_step.value=self.dict_step[b]
+
+    def on_cycles(self,a,b):
         if b==0:
-            self.do_toast("heating")
+            self.state=0
+            self.sound.play()
+
+
+
+
+            
+
     def parsing_list(self,data):
         a=str(data)[1:-1].replace(" ","")
         return a
@@ -146,8 +172,9 @@ import sys
 class PCR(App):
     def build(self):
         return Ml()
-
     def on_stop(self):
         sys.exit()
 if __name__=="__main__":
     PCR().run()
+
+

@@ -11,7 +11,6 @@
     font_size:self.height/2
     color:0,0,0,1
     on_press:self.alpa=1
-
 <BtnGridL@Button>:
     alpa:.1
     canvas.before:
@@ -53,6 +52,8 @@
     value2:0 
     max1:100
     max2:60
+    min1:10
+    min2:0
     BoxLayout
         FloatLayout
             BoxVer
@@ -63,6 +64,7 @@
                     max:root.max1
                     value:root.value1
                     on_value:root.value1=self.value
+                    min:root.min1
                 BoxVer
                     size_hint:1,.1
                     
@@ -87,6 +89,7 @@
                     max:root.max2
                     value:root.value2
                     on_value:root.value2=self.value
+                    min:root.min2
                 BoxVer
                     size_hint:1,.1
                     Label
@@ -123,12 +126,14 @@
     value2:0 
     max1:60
     max2:60
+    min1:1
     FloatLayout
         BoxVer
             spacing:dp(2)
             pos_hint:{"center_x":.5,"y":0}
             size_hint:.75,.925
             SldVer:
+                min:root.min1
                 max:root.max1
                 value:root.value1
                 on_value:root.value1=self.value

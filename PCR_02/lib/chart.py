@@ -67,10 +67,14 @@ Builder.load_string("""
                         Rectangle:
                             size:self.size[0],dp(1.5)
                             pos:self.pos
-                    GridLayout
+                    BoxLayout
                         pos_hint:{"center_x":.5,"center_y":.5}
-                        cols:root.major_x
                         id:root_kotak   
+                    BoxLayout
+                        orientation:"vertical"
+                        pos_hint:{"center_x":.5,"center_y":.5}
+                        id:root_kotak_y   
+                    
                 BoxLayout:
                     id:root_x_label
                     size_hint:1,None
@@ -99,23 +103,25 @@ class Chart(FloatLayout):
     major_y=NumericProperty(1)
     def __init__(self,*args,**kwargs):
         super(Chart,self).__init__(*args,**kwargs)
-
+        Clock.schedule_once(self.delay1,1)
     def on_major_x(self,a,b):
-        Clock.schedule_once(self.delay,5)
+        Clock.schedule_once(self.delay,1)
     def delay(self,dt):
         self.ids.root_kotak.clear_widgets()
         self.ids.root_x_label.clear_widgets()
-        self.ids.root_y_label.clear_widgets()
-        for i in range(self.major_x * self.major_y):
+        for i in range(self.major_x):
             self.ids.root_kotak.add_widget(Kotak())
-        if self.major_x<=50:
-            for i in range(self.major_x):
+            if self.major_x<=40:
                 self.ids.root_x_label.add_widget(Xlabel(text=str(i+1)))
-        else:
-            for i in range(self.major_x):
+            else:
                 self.ids.root_x_label.add_widget(Xlabel(text="I"))
+    def delay1(self,dt):
+        self.ids.root_y_label.clear_widgets()
+        self.ids.root_kotak_y.clear_widgets()
         for i in range(self.major_y):
             self.ids.root_y_label.add_widget(Ylabel(text=str(self.major_y-i)))
+            self.ids.root_kotak_y.add_widget(Kotak())
+
         
 
 

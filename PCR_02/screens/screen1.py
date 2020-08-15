@@ -5,7 +5,7 @@ import json
 from kivy.lang import Builder
 Builder.load_file("kv/sc1.kv")
 class Sc1(Screen):
-    protokol=ListProperty([0,0,0,0,0,0,0,0,0])
+    protokol=ListProperty([0,0,0,0,0,0,0,0,1])
     btns_state=DictProperty({})
     def __init__(self,*args,**kwargs):
         self.register_event_type("on_set")
